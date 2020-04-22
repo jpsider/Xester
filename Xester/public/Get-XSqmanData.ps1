@@ -1,7 +1,7 @@
-function Get-XSqmanData {
+function Get-XsQmanData {
     <#
 .DESCRIPTION
-    This function will 
+    This function will Gather Qman data.
 .PARAMETER RestServer
     A Rest Server is required.
 .PARAMETER QmanId

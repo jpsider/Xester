@@ -1,7 +1,7 @@
-function Update-XSqmanData {
+function Update-XsQmanData {
     <#
 .DESCRIPTION
-    This function will 
+    This function will Update the Qman Data
 .PARAMETER RestServer
     A Rest Server is required.
 .PARAMETER Status
