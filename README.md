@@ -4,12 +4,8 @@ Configuration Management Tool
 
 [![Build status](https://ci.appveyor.com/api/projects/status/github/jpsider/Xester?branch=master&svg=true)](https://ci.appveyor.com/project/jpsider/Xester)
 [![PS Gallery](https://img.shields.io/badge/install-PS%20Gallery-blue.svg)](https://www.powershellgallery.com/packages/Xester/)
-[![Coverage Status](https://coveralls.io/repos/github/jpsider/Configuration Management Tool/badge.svg?branch=master)](https://coveralls.io/github/jpsider/Xester?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/jpsider/Xester/badge.svg?branch=master)](https://coveralls.io/github/jpsider/Xester?branch=master)
 [![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat)](http://Xester.readthedocs.io/en/latest/?badge=latest)
-
-## GitPitch PitchMe presentation
-
-* [gitpitch.com/jpsider/Xester](https://gitpitch.com/jpsider/Xester)
 
 ## Getting Started
 
