@@ -12,6 +12,8 @@ function Disable-SSLValidation
         If compiling code is an option, then implementing System.Net.ICertificatePolicy in C# and Add-Type is trivial.
     .LINK
         http://www.exploit-monday.com
+    .EXAMPLE
+        Disable-SSLValidation
     #>
     Set-StrictMode -Version 2
     # You have already run this function if ([System.Net.ServicePointManager]::CertificatePolicy.ToString() -eq 'IgnoreCerts') { Return }
@@ -22,7 +24,7 @@ function Disable-SSLValidation
     $TypeBuilder = $ModuleBuilder.DefineType('IgnoreCerts', 'AutoLayout, AnsiClass, Class, Public, BeforeFieldInit', [System.Object], [System.Net.ICertificatePolicy])
     $TypeBuilder.DefineDefaultConstructor('PrivateScope, Public, HideBySig, SpecialName, RTSpecialName') | Out-Null
     $MethodInfo = [System.Net.ICertificatePolicy].GetMethod('CheckValidationResult')
-    $MethodBuilder = $TypeBuilder.DefineMethod($MethodInfo.Name, 'PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask', $MethodInfo.CallingConvention, $MethodInfo.ReturnType, ([Type[]] ($MethodInfo.GetParameters() | ForEach-Object {$_.ParameterType})))
+    $MethodBuilder = $TypeBuilder.DefineMethod($MethodInfo.Name, 'PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask', $MethodInfo.CallingConvention, $MethodInfo.ReturnType, ([Type[]] ($MethodInfo.GetParameters() | ForEach-Object { $_.ParameterType })))
     $ILGen = $MethodBuilder.GetILGenerator()
     $ILGen.Emit([Reflection.Emit.Opcodes]::Ldc_I4_1)
     $ILGen.Emit([Reflection.Emit.Opcodes]::Ret)
