@@ -1,0 +1,11 @@
+site_name: Xester
+repo_url: https://github.com/jpsider/Xester
+theme: readthedocs
+edit_uri: edit/master/docs/
+pages:
+- Home: index.md
+- Xester Basics:
+  - What is Xester: about.md
+  - Quick Start: Quick-Start-Installation-and-Example.md
+- Public Functions:
+  - Some_Function: Some_Function.md
