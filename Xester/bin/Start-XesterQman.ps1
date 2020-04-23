@@ -58,7 +58,7 @@ Do {
             2 {
                 Write-Log -Message "Manager Status is: $STATUS_ID - Running - Performing normal tasks." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
                 # Abort Cancelled Tests
-                
+
                 # Review Submitted Tests
 
                 # Review Queued Tests
