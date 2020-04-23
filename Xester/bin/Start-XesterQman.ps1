@@ -67,6 +67,7 @@ Do {
             3{
                 Write-Log -Message "Manager Status is: $STATUS_ID - Starting Up - Performing Startup tasks." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
                 # Set the Status to Running (2)
+                Write-Log -Message "Setting the Manager status to Running." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
                 $STATUS_ID = 2
                 Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
             }
@@ -76,6 +77,7 @@ Do {
                 # Set any Queued Tests back to Submitted.
                 Reset-QueuedTestSet -RestServer $RestServer
                 # Set the Status to Shutdown (1)
+                Write-Log -Message "Setting the Manager Status to Shutdown." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
                 $STATUS_ID = 1
                 Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
             }
@@ -86,7 +88,7 @@ Do {
                 $WAIT = 3
             }
         } # End Switch
-        
+
         # Perform the wait
         Write-Log -Message "Waiting $WAIT seconds before next loop." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
         # Update the Heartbeat

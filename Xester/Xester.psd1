@@ -71,7 +71,7 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = 'Invoke-XesterRestCall','Get-XSqmanData','Update-XSqmanData'
+    FunctionsToExport = 'Invoke-XesterRestCall','Get-XSqmanData','Update-XSqmanData','Reset-QueuedTestSet'
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     # CmdletsToExport = '*'
