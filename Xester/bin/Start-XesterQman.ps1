@@ -1,4 +1,5 @@
 [CmdletBinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", '')]
 param (
     [Parameter(Mandatory=$true)]
     [string]$PropertiesPath
