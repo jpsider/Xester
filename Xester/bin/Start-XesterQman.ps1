@@ -11,10 +11,10 @@ $host.ui.RawUI.WindowTitle = "XesterUI Queue Manager"
 $Properties = Get-Content -Path $PropertiesPath | ConvertFrom-Json
 
 $QmanId = $Properties.ID
-$Logfile = $Properties.Logfile
+$Global:Logfile = $Properties.Logfile
 $LogDir = $Properties.LogDir
 $RestServer = $Properties.RestServer
-$LogLevel = $Properties.LogLevel
+$Global:LogLevel = $Properties.LogLevel
 
 # If LogDir is blank, Set a default
 If(($LogDir -eq "") -or ($null -eq $LogDir)){
@@ -23,7 +23,7 @@ If(($LogDir -eq "") -or ($null -eq $LogDir)){
 
 # If Logfile is blank, Set a default value
 If(($Logfile -eq "") -or ($null -eq $Logfile)){
-    $Logfile = "$env:SystemDrive/XesterUI/queue_manager/qman.log"
+    $Global:Logfile = "$env:SystemDrive/XesterUI/queue_manager/qman.log"
 }
 
 # Start endless loop! - set a variable that never gets changed.
@@ -58,10 +58,14 @@ Do {
             2 {
                 Write-Log -Message "Manager Status is: $STATUS_ID - Running - Performing normal tasks." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
                 # Abort Cancelled Tests
-
+                Write-Log -Message "Aborting Cancelled Tests." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
+                Complete-CancelledTestSet -RestServer $RestServer
                 # Review Submitted Tests
-
-                # Review Queued Tests
+                Write-Log -Message "Updating Submitted Tests" -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
+                Update-SubmittedTestSet -RestServer $RestServer
+                # Assign Queued Tests
+                Write-Log -Message "Assigning Queued Tests." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
+                Invoke-AssignQueuedTestSet -RestServer $RestServer
             }
             # Starting Up
             3{
@@ -96,7 +100,9 @@ Do {
         Start-Sleep -Seconds $WAIT
     }
     catch {
-        Write-Log -Message "The Queue Manager Crashed, restarting in 5 seconds." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
+        $ErrorMessage = $_.Exception.Message
+        $FailedItem = $_.Exception.ItemName
+        Write-Log -Message "The Queue Manager Crashed '$ErrorMessage $FailedItem', restarting in 5 seconds." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
         Start-Sleep -Seconds 5
     }
 
