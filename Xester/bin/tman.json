@@ -1,0 +1,7 @@
+{
+  "ID":"1",
+  "RestServer":"localhost",
+  "LogDir":"C:\\XesterUI\\",
+  "LogFile":"C:\\XesterUI\\testrun_manager\\tman.log",
+  "LogLevel":"INFO"
+}
