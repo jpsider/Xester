@@ -28,15 +28,22 @@ If(($Logfile -eq "") -or ($null -eq $Logfile)){
 }
 
 # Start endless loop! - set a variable that never gets changed.
-Write-Log -Message "Starting XesterUI Queue Manager" -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
+Write-Log -Message "Starting XesterUI TestRun Manager" -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
 $ManagerRunning = $true
 Do {
     try {
-        # Get the TestRun Manager Status from the RestServer
-        $TmanData = Get-XsTmanData -RestServer $RestServer -QmanId $QmanId
-        $STATUS_ID = $TmanData.STATUS_ID
-        $WAIT = $TmanData.Wait
-
+        try{
+            # Get the TestRun Manager Status from the RestServer
+            $TmanData = Get-XsTmanData -RestServer $RestServer -TmanId $TmanId
+            $STATUS_ID = $TmanData.STATUS_ID
+            $WAIT = $TmanData.Wait
+        }
+        Catch {
+            $ErrorMessage = $_.Exception.Message
+            $FailedItem = $_.Exception.ItemName
+            Write-Log -Message "Unable to Get Tman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+            Throw "Unable to Get Tman Data"
+        }
 
 
         # TODO
@@ -44,9 +51,16 @@ Do {
 
 
 
-        # Update the Heartbeat & Logfile
-        Update-XsTmanData -RestServer $RestServer -Status $STATUS_ID -TmanId $QmanId -TmanLogFile "$LogFile" | Out-Null
-
+        try {
+            # Update the Heartbeat & Logfile
+            Update-XsTmanData -RestServer $RestServer -Status $STATUS_ID -TmanId $TmanId -TmanLogFile "$LogFile" | Out-Null
+        }
+        Catch {
+            $ErrorMessage = $_.Exception.Message
+            $FailedItem = $_.Exception.ItemName
+            Write-Log -Message "Unable to Update Tman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+            Throw "Unable to Update Tman Data"
+        }
 
 
         # Switch on the STATUS_ID
@@ -76,7 +90,15 @@ Do {
                 # Set the Status to Running (2)
                 Write-Log -Message "Setting the Manager status to Running." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
                 $STATUS_ID = 2
-                Update-XsTmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
+                try{
+                    Update-XsTmanData -RestServer $RestServer -Status $STATUS_ID -TmanId $TmanId | Out-Null
+                }
+                Catch {
+                    $ErrorMessage = $_.Exception.Message
+                    $FailedItem = $_.Exception.ItemName
+                    Write-Log -Message "Unable to Update Tman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+                    Throw "Unable to Update Tman Data"
+                }
             }
             # Shutting Down
             4{
@@ -85,12 +107,21 @@ Do {
                 #TODO
                     # Think about what should happen when one of these guys shuts down!
                     # Find all running jobs for this manager, kill the jobs, abort the tests?
+                    # Find any Assigned tests, and set them back to queued
                 
                 
                 # Set the Status to Shutdown (1)
                 Write-Log -Message "Setting the Manager Status to Shutdown." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
                 $STATUS_ID = 1
-                Update-XsTmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
+                try{
+                    Update-XsTmanData -RestServer $RestServer -Status $STATUS_ID -TmanId $TmanId | Out-Null
+                }
+                Catch {
+                    $ErrorMessage = $_.Exception.Message
+                    $FailedItem = $_.Exception.ItemName
+                    Write-Log -Message "Unable to Update Tman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+                    Throw "Unable to Update Tman Data"
+                }
             }
             # Unknown
             default {
@@ -103,8 +134,16 @@ Do {
         # Perform the wait
         Write-Log -Message "Waiting $WAIT seconds before next loop." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
         # Update the Heartbeat
-        Update-XsTmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
-        Start-Sleep -Seconds $WAIT
+        try {
+            Update-XsTmanData -RestServer $RestServer -Status $STATUS_ID -TmanId $TmanId | Out-Null
+            Start-Sleep -Seconds $WAIT
+        }
+        Catch {
+            $ErrorMessage = $_.Exception.Message
+            $FailedItem = $_.Exception.ItemName
+            Write-Log -Message "Unable to Update Tman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+            Throw "Unable to Update Tman Data"
+        }
     }
     catch {
         $ErrorMessage = $_.Exception.Message

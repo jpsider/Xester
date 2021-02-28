@@ -39,15 +39,31 @@ Do {
             # Clear TestRun Logs older than 7 days
 
         # Get the Qman Status from the RestServer
-        $QmanData = Get-XSqmanData -RestServer $RestServer -QmanId $QmanId
-        $STATUS_ID = $QmanData.STATUS_ID
-        $WAIT = $QmanData.Wait
+        try {
+            $QmanData = Get-XSqmanData -RestServer $RestServer -QmanId $QmanId
+            $STATUS_ID = $QmanData.STATUS_ID
+            $WAIT = $QmanData.Wait
+        }
+        Catch {
+            $ErrorMessage = $_.Exception.Message
+            $FailedItem = $_.Exception.ItemName
+            Write-Log -Message "Unable to Get Qman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+            Throw "Unable to Get Qman Data"
+        }
 
         # TODO
             # Roll Log (If Needed)
 
         # Update the Heartbeat & Logfile
-        Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId -QmanLogFile "$LogFile" | Out-Null
+        try{
+            Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId -QmanLogFile "$LogFile" | Out-Null
+        }
+        Catch {
+            $ErrorMessage = $_.Exception.Message
+            $FailedItem = $_.Exception.ItemName
+            Write-Log -Message "Unable to Update Qman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+            Throw "Unable to Update Qman Data"
+        }
 
         # Switch on the STATUS_ID
         Switch ($STATUS_ID) {
@@ -74,7 +90,15 @@ Do {
                 # Set the Status to Running (2)
                 Write-Log -Message "Setting the Manager status to Running." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
                 $STATUS_ID = 2
-                Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
+                try {
+                    Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
+                }
+                Catch {
+                    $ErrorMessage = $_.Exception.Message
+                    $FailedItem = $_.Exception.ItemName
+                    Write-Log -Message "Unable to Update Qman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+                    Throw "Unable to Update Qman Data"
+                }
             }
             # Shutting Down
             4{
@@ -84,7 +108,15 @@ Do {
                 # Set the Status to Shutdown (1)
                 Write-Log -Message "Setting the Manager Status to Shutdown." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
                 $STATUS_ID = 1
-                Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
+                try {
+                    Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
+                }
+                Catch {
+                    $ErrorMessage = $_.Exception.Message
+                    $FailedItem = $_.Exception.ItemName
+                    Write-Log -Message "Unable to Update Qman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+                    Throw "Unable to Update Qman Data"
+                }
             }
             # Unknown
             default {
@@ -97,8 +129,16 @@ Do {
         # Perform the wait
         Write-Log -Message "Waiting $WAIT seconds before next loop." -Logfile $Logfile -LogLevel $LogLevel -MsgType INFO
         # Update the Heartbeat
-        Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
-        Start-Sleep -Seconds $WAIT
+        try {
+            Update-XsQmanData -RestServer $RestServer -Status $STATUS_ID -QmanId $QmanId | Out-Null
+            Start-Sleep -Seconds $WAIT
+        }
+        Catch {
+            $ErrorMessage = $_.Exception.Message
+            $FailedItem = $_.Exception.ItemName
+            Write-Log -Message "Unable to Update Qman Data" -Logfile $Logfile -LogLevel $LogLevel -MsgType FATAL
+            Throw "Unable to Update Qman Data"
+        }
     }
     catch {
         $ErrorMessage = $_.Exception.Message
